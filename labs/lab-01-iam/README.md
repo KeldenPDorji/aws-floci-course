@@ -79,7 +79,39 @@ filesystem fallback instead: stop Floci, `tar -czf ~/floci-data-lab-01.tar.gz -C
 start Floci. Stopping first matters — archiving a live data directory can capture
 a half-written file.
 
-### 7. Floci reports its own session name on assumed-role identities
+### 7. Exercise 3 asks for a MaxSessionDuration that AWS does not permit
+The exercise requires a role that "cannot hold a session longer than 30 minutes"
+and hints that 1800 is the value for `--max-session-duration`. The AWS CLI
+rejects it before sending the request: `Invalid value for parameter
+MaxSessionDuration, value: 1800, valid min value: 3600`. Real AWS constrains
+`MaxSessionDuration` to 3600–43200 seconds (1–12 hours), so a 30-minute cap
+cannot be expressed that way and the exercise's stated expected outcome
+(`MaxSessionDuration is 1800`) is unreachable.
+
+The requirement is still satisfiable, just not with that parameter. I set
+`MaxSessionDuration` to its floor of 3600 and enforced the real limit in the
+trust policy:
+
+    "Condition": {
+      "NumericLessThanEquals": { "sts:DurationSeconds": "1800" }
+    }
+
+`sts:DurationSeconds` is evaluated at `AssumeRole` time, so any request for more
+than 1800 seconds is denied outright rather than silently truncated. Calling
+`assume-role --duration-seconds 1800` then returns an `Expiration` exactly 30
+minutes ahead. That is a stronger control than the parameter would have been:
+`MaxSessionDuration` only caps the ceiling, whereas the condition denies the
+oversized request and leaves an audit trail. Evidence:
+`screenshots/16-exercises-1-2-3.png`.
+
+On `sts:ExternalId` (the exercise asks whether one should be added): yes, in a
+real deployment. The partner is a third party, which is exactly the confused-deputy
+scenario ExternalId exists to prevent — without it, any other customer of that
+partner's analytics service could ask the partner to assume our role on their
+behalf. It is omitted here only because the exercise's four stated requirements
+do not include it and no partner-supplied secret exists to use as the value.
+
+### 8. Floci reports its own session name on assumed-role identities
 `sts assume-role` correctly returned
 `arn:aws:sts::000000000000:assumed-role/usms-developer-role/usms-dev-01-lab01`,
 but a subsequent `sts get-caller-identity` using those credentials reported the

@@ -1,0 +1,34 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListTheStudentDataBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:ListBucket",
+        "s3:GetBucketLocation"
+      ],
+      "Resource": "arn:aws:s3:::usms-student-data"
+    },
+    {
+      "Sid": "ReadTranscriptObjectsOnly",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject"
+      ],
+      "Resource": "arn:aws:s3:::usms-student-data/transcripts/*"
+    },
+    {
+      "Sid": "DenyEveryWriteAndDelete",
+      "Effect": "Deny",
+      "Action": [
+        "s3:Put*",
+        "s3:Delete*"
+      ],
+      "Resource": [
+        "arn:aws:s3:::usms-student-data",
+        "arn:aws:s3:::usms-student-data/*"
+      ]
+    }
+  ]
+}

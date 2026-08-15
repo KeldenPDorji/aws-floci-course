@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowAuditUserToAssumeForPartnerAnalytics",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::000000000000:user/usms-audit-01"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "NumericLessThanEquals": {
+          "sts:DurationSeconds": "1800"
+        }
+      }
+    }
+  ]
+}
