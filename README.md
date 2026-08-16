@@ -54,4 +54,3 @@ source configs/lab-01.env
 - Region: `us-east-1`  ·  Floci account: `000000000000`
 - Storage mode: `hybrid`, bind-mounted to `~/floci-data`
 - Secrets live in `outputs/` and are **never** committed
-# aws-floci-course
