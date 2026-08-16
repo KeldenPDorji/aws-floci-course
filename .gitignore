@@ -23,10 +23,10 @@ data/
 *.key
 *-access-key.json
 *credentials*
-
-# ---- Course material and scratch notes, not my coursework ----
-lab1.txt
-CLAUDE.md
+# ...but this one is a POLICY DOCUMENT, not a credential. The rule above matches
+# it on the word "credentials" alone. Same negation trick as outputs/.gitkeep:
+# it works because policies/ itself is not excluded.
+!policies/usms-self-manage-credentials.json
 
 # ---- OS / editor noise ----
 .DS_Store
