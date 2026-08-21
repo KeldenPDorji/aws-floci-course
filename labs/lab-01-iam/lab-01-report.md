@@ -480,3 +480,34 @@ source ~/aws-floci-course/configs/lab-01.env
 ```
 
 Expected: `PASS=34  FAIL=0`.
+
+---
+
+## Appendix: AWS Skill Builder lab (IAM Users and Groups)
+
+Everything above was built against Floci, deliberately, so that isolation from
+real AWS could be proven (Section 3.3). This appendix is a separate,
+independently graded exercise, the AWS Skill Builder hands-on lab "IAM Users
+and Groups," run against a real AWS account through an institutional Vocareum
+sandbox. It is unrelated to the `usms-` foundation above: no resource from
+this lab (Steps 16-33 or Exercises 1-5) appears in it, and it does not count
+toward any Section 10 checklist item.
+
+The lab provisions three users (`user-1`, `user-2`, `user-3`) and three groups
+(`EC2-Admin`, `EC2-Support`, `S3-Support`), and its tasks are to inspect the
+pre-built managed and inline policies on each group, add each user to the
+group matching their intended job function, then sign in as each user in a
+private browser session to confirm the permissions actually apply, read-only
+S3 for `user-1`, read-only EC2 for `user-2`, and EC2 start/stop for `user-3`.
+
+![AWS Skill Builder lab, IAM Users page, showing the sandbox account and pre-created users](../../screenshots/real-aws-console-access.png)
+
+This screenshot was taken while exploring the pre-created users (Task 1): the
+`Groups` column reads `1, 0, 0` across the three lab users, and the lab's own
+completion check for Task 2 expects `1` for all three. Grading for this lab
+happens entirely through Vocareum's own **Submit** button on the lab page, not
+through this repository, so this image is kept as a personal record rather
+than as proof of a grade, if Task 2 (adding all three users to their groups)
+and Task 3 (signing in as each and testing) were not yet finished when this
+was captured, that remains to be completed and submitted directly in
+Vocareum.
