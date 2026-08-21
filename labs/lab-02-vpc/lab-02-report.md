@@ -473,3 +473,94 @@ source ~/aws-floci-course/configs/lab-02.env
 ```
 
 Expected: `PASS=32  FAIL=1`.
+
+---
+
+## Appendix: AWS Academy lab (Build your VPC and Launch a Web Server)
+
+Everything above was built against Floci with the AWS CLI, against `usms-vpc`
+in account `000000000000`. This appendix is a separate, independently graded
+exercise - the AWS Academy hands-on lab "Build your VPC and Launch a Web
+Server" - built through the real AWS Management Console on a real AWS
+Academy account, `453226350599`, region `us-east-1`. No resource from the
+CLI-based lab above appears in it: the VPC is `lab-vpc`
+(`vpc-08f64dcf464781f7a`, `10.0.0.0/16`), not `usms-vpc`, and it does not
+count toward Section 14's checklist.
+
+### The build
+
+Using the VPC console's **VPC and more** wizard, `lab-vpc` was provisioned in
+a single operation with one public and one private subnet in `us-east-1a`, an
+internet gateway, a NAT gateway, two route tables, and an S3 gateway
+endpoint.
+
+![VPC resource map showing lab-vpc with its subnets, route tables, internet gateway and NAT gateway](../../screenshots/academy-01-vpc-created.png)
+
+A second Availability Zone was then added by hand - `lab-subnet-public2`
+(`10.0.2.0/24`) and `lab-subnet-private2` (`10.0.3.0/24`) in `us-east-1b` -
+so the VPC spans two AZs, the same reasoning this course's own Lab 02 gives
+for building `usms-private-subnet-b`.
+
+![Subnets list filtered to lab-vpc showing all four subnets and their CIDR blocks](../../screenshots/academy-02-four-subnets.png)
+
+The new private subnet was associated with the existing private route table
+(`0.0.0.0/0 -> NAT gateway`):
+
+![Private route table subnet associations showing both private subnets associated](../../screenshots/academy-03-private-rt-associations.png)
+
+The public route table carries the route that actually makes a subnet
+public - `0.0.0.0/0` to the internet gateway, not any name or tag, exactly
+the property the CLI-based lab's Checkpoint 5 proves independently:
+
+![Public route table routes tab showing 0.0.0.0/0 targeting the internet gateway](../../screenshots/academy-04-public-rt-igw-route.png)
+
+The second public subnet was associated with it, leaving zero subnets on the
+implicit main route table:
+
+![Public route table subnet associations showing both public subnets and zero unassociated subnets](../../screenshots/academy-04b-public-rt-associations.png)
+
+A security group, `Web Security Group`, was created with a single inbound
+rule - TCP 80 from `0.0.0.0/0` - stateful, so the reply needs no matching
+outbound rule.
+
+![Web Security Group detail page showing the inbound HTTP rule on port 80](../../screenshots/academy-05-web-security-group.png)
+
+An EC2 instance (`Web Server 1`, Amazon Linux 2023, t2.micro) was launched
+into `lab-subnet-public2` with a public IP and this security group, and a
+user-data script that installs Apache, PHP and MariaDB and deploys the lab
+application on first boot. It reached `Running` with both status checks
+passed.
+
+![EC2 instances list showing Web Server 1 running with 2/2 checks passed](../../screenshots/academy-06-instance-running.png)
+
+### Verification - and why this appendix is worth having
+
+Every screenshot above proves an object exists and is configured correctly,
+exactly like the CLI-based lab's own evidence. What this appendix adds that
+the Floci-based lab structurally cannot: Floci does not forward real packets
+(Section 7), so nothing in this course's own evidence proves a request
+actually completes end to end. This does. Browsing to the instance's public
+address returned the deployed application:
+
+![Web application page served by the EC2 instance showing AWS logo and instance metadata](../../screenshots/academy-07-webpage-working.png)
+
+The instance ID and Availability Zone reported by the page's own metadata
+(`i-018cbf46dbda2e57e`, `us-east-1b`) match the launched instance exactly,
+which is the actual proof: the internet gateway, the route table
+association, the public IP, and the security group rule all had to be
+correct *simultaneously* for that page to load at all. The lab was submitted
+for grading through the AWS Academy environment directly:
+
+![Vocareum grades panel showing the score awarded for each task](../../screenshots/academy-08-submission-grades.png)
+
+### The one lesson this appendix demonstrates that Floci cannot
+
+`lab-subnet-public2` was only reachable once explicitly associated with
+`lab-rtb-public`. Had that step been skipped, the subnet would have fallen
+back to the VPC's main route table - which has no internet gateway route -
+and the instance would have kept its public IP address while being
+completely unreachable, with no error anywhere to explain why. This is the
+identical failure mode Review Question 1 of the CLI-based lab above works
+through in the abstract (`notes/lab-02-notes.md`); here it was verified
+against real packet forwarding rather than reasoned about from a route
+table's contents alone.
