@@ -28,6 +28,9 @@ data/
 # it works because policies/ itself is not excluded.
 !policies/usms-self-manage-credentials.json
 
+# ---- Raw assignment text, not coursework ----
+lab2.txt
+
 # ---- OS / editor noise ----
 .DS_Store
 Thumbs.db
