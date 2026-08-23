@@ -1,7 +1,5 @@
 # Lab 02 - VPC and Networking - my notes
 
----
-
 ## Understanding checks (Section 14, answered before submitting)
 
 **Can I say what makes a subnet public without using the word "public"?**
