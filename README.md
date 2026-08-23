@@ -33,7 +33,7 @@ source configs/course.env
 | Lab | Topic | Status | Report |
 |-----|-------|--------|--------|
 | 01  | IAM   | [x] complete | [lab-01-report.md](labs/lab-01-iam/lab-01-report.md) |
-| 02  | VPC   | [ ] not started | |
+| 02  | VPC   | [x] complete | [lab-02-report.md](labs/lab-02-vpc/lab-02-report.md) |
 
 ### Lab 01 verification
 
@@ -46,6 +46,24 @@ source configs/course.env
 ./scripts/setup/floci-up.sh
 source configs/lab-01.env
 ./scripts/utilities/verify-lab-01.sh
+```
+
+### Lab 02 verification
+
+![verify-lab-02.sh showing PASS=32 FAIL=1 across environment, VPC, subnets, routing, security groups, NACL, NAT, endpoint and Git hygiene](screenshots/lab02-16-exercises-4-5.png)
+
+The one failure is a documented Floci limitation (group-to-group security
+group rules are not persisted by this emulator build), not a build error -
+see [lab-02-report.md](labs/lab-02-vpc/lab-02-report.md) Section 7.
+
+Reproduce with:
+
+```bash
+source configs/course.env
+./scripts/setup/floci-up.sh
+source configs/lab-01.env
+source configs/lab-02.env
+./scripts/utilities/verify-lab-02.sh
 ```
 
 ## Conventions
