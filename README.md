@@ -35,6 +35,7 @@ source configs/course.env
 | 01  | IAM   | [x] complete | [lab-01-report.md](labs/lab-01-iam/lab-01-report.md) |
 | 02  | VPC   | [x] complete | [lab-02-report.md](labs/lab-02-vpc/lab-02-report.md) |
 | 03  | EC2   | [x] complete | [lab-03-report.md](labs/lab-03-ec2/lab-03-report.md) |
+| 04  | ECS   | [x] complete | [lab-04-report.md](labs/lab-04-ecs/lab-04-report.md) |
 
 ### Lab 01 verification
 
@@ -85,6 +86,28 @@ source configs/lab-01.env
 source configs/lab-02.env
 source configs/lab-03.env
 ./scripts/utilities/verify-lab-03.sh
+```
+
+### Lab 04 verification
+
+![verify-lab-04.sh showing PASS=37 FAIL=1 across environment, Lab 01-03 dependencies, IAM, logging, ECS, networking and Git hygiene](screenshots/lab04-07-verify-lab-04.png)
+
+The one failure is the documented Floci limitation from Lab 02: the enrolment
+security group's rule was written as a group reference to `usms-app-sg`, and
+this emulator build does not store group references. This Floci build is on
+support path B (ECS only): Application Auto Scaling is not implemented. See
+[lab-04-report.md](labs/lab-04-ecs/lab-04-report.md) Sections 3.7 and 7.
+
+Reproduce with:
+
+```bash
+source configs/course.env
+./scripts/setup/floci-up.sh
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+source configs/lab-04.env
+./scripts/utilities/verify-lab-04.sh
 ```
 
 ## Conventions
