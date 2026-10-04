@@ -71,6 +71,14 @@ services:
       FLOCI_SERVICES_OPENSEARCH_PROXY_BASE_PORT: "9400"
       FLOCI_SERVICES_OPENSEARCH_PROXY_MAX_PORT: "9404"
 
+      # --- EC2 instance SSH ports (Lab 03) --------------------------------
+      # Floci forgets which SSH host ports its instance containers hold when it
+      # restarts, and re-hands out 2200, 2201... to new instances, which then
+      # fail with "port is already allocated". Starting the range past the
+      # ports Lab 03's first instances took avoids the collision.
+      FLOCI_SERVICES_EC2_SSH_PORT_RANGE_START: "2210"
+      FLOCI_SERVICES_EC2_SSH_PORT_RANGE_END: "2299"
+
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:4566/_floci/health || exit 1"]
       interval: 5s

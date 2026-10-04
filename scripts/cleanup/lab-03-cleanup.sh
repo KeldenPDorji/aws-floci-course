@@ -55,7 +55,11 @@ say "deregister the golden AMI"
   aws ec2 deregister-image --image-id "$USMS_WEB_AMI" || true
 
 say "delete the key pair, and the private key on disk"
-aws ec2 delete-key-pair --key-name "${USMS_KEY_PAIR:-usms-app-key}" || true
+# By ID, not --key-name: Floci 1.5.34 answers {"Return": true} to a delete by
+# name and keeps the key. Deleting by ID works there and on real AWS alike.
+kp_id=$(aws ec2 describe-key-pairs --key-names "${USMS_KEY_PAIR:-usms-app-key}" \
+          --query 'KeyPairs[0].KeyPairId' --output text 2>/dev/null || echo None)
+[ "$kp_id" != "None" ] && aws ec2 delete-key-pair --key-pair-id "$kp_id" || true
 rm -f outputs/usms-app-key.pem
 
 echo; echo "Lab 03 teardown complete. You may now run lab-02-cleanup.sh."

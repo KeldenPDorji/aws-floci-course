@@ -30,6 +30,7 @@ data/
 
 # ---- Raw assignment text, not coursework ----
 lab2.txt
+Lab [0-9][0-9] *.md
 
 # ---- OS / editor noise ----
 .DS_Store

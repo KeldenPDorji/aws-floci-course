@@ -34,6 +34,7 @@ source configs/course.env
 |-----|-------|--------|--------|
 | 01  | IAM   | [x] complete | [lab-01-report.md](labs/lab-01-iam/lab-01-report.md) |
 | 02  | VPC   | [x] complete | [lab-02-report.md](labs/lab-02-vpc/lab-02-report.md) |
+| 03  | EC2   | [x] complete | [lab-03-report.md](labs/lab-03-ec2/lab-03-report.md) |
 
 ### Lab 01 verification
 
@@ -64,6 +65,26 @@ source configs/course.env
 source configs/lab-01.env
 source configs/lab-02.env
 ./scripts/utilities/verify-lab-02.sh
+```
+
+### Lab 03 verification
+
+![verify-lab-03.sh showing PASS=33 FAIL=3 across environment, dependencies, key pair, web tier, storage, data tier, image, tagging and Git hygiene](screenshots/lab03-09-verify-lab-03.png)
+
+The three failures are documented Floci limitations, not build errors: this
+emulator build has no `AttachVolume` (two checks), and it gives every
+instance the placeholder public address `127.0.0.1` (one check). See
+[lab-03-report.md](labs/lab-03-ec2/lab-03-report.md) Sections 3.10 and 7.
+
+Reproduce with:
+
+```bash
+source configs/course.env
+./scripts/setup/floci-up.sh
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+./scripts/utilities/verify-lab-03.sh
 ```
 
 ## Conventions
