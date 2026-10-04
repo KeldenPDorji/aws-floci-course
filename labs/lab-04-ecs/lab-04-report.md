@@ -1,14 +1,4 @@
 # Lab 04 - Amazon ECS
-## Lab Report
-
-**Student:** Kelden P. Dorji
-**Project:** University Student Management System (USMS)
-**Environment:** Floci 1.5.34 (local AWS emulator), account `000000000000`, region `us-east-1`, AWS CLI 2.36.23
-**Repository:** `aws-floci-course`
-**Support path (Step 3):** **B - ECS only.** ECS, CloudWatch and CloudWatch Logs answer; Application Auto Scaling does not.
-**Verification:** `scripts/utilities/verify-lab-04.sh` -> **PASS=37 FAIL=1** (the one failure is the Floci group-reference limitation Lab 2 documented, not a build error)
-
----
 
 ## 1. Summary
 
@@ -557,57 +547,7 @@ the service alone, including this lab's own inventory script, would be wrong.
 
 ---
 
-## 8. Section 14 - Lab Assessment Checklist
-
-### Environment
-
-- [x] Floci runs under Docker Compose and its storage mode is not `memory` - verify's environment block, `07`
-- [x] `whoami.sh` / `get-caller-identity` reports account `000000000000` - `02`
-- [x] No `floci start`, `docker compose down -v` or `docker volume prune` used - only `floci-up.sh` / `floci-down.sh`
-- [x] Support path stated at the top of `notes/lab-04-notes.md` - **Path B**
-
-### Resources
-
-- [x] `usms-ecs-cluster` is `ACTIVE` - `02`
-- [x] `/usms/ecs/enrolment` exists with a retention policy set - `03`
-- [x] `usms-ecs-exec-role` and `usms-ecs-task-role` both exist and both trust `ecs-tasks.amazonaws.com` - `03`
-- [x] `usms-ecs-task-role` carries Lab 1's `USMSStudentDataReadWrite`, not a copy - `03` (attached by ARN; `diff` identical to Lab 3's)
-- [x] `usms-enrolment:1` registered, `awsvpc`, FARGATE, **two different** role ARNs - `04`
-- [x] `usms-enrolment-svc` `ACTIVE`, two private subnets, `assignPublicIp DISABLED`, desired 2 - `05`, `07`
-- [x] `usms-enrolment-sg` admits tcp/80 from `usms-app-sg` by group reference and nothing from `0.0.0.0/0` - `04`, `07` *(written by group reference - `04`, `policies/usms-enrolment-sg-ingress.json`; Floci stores no group reference, the documented Lab 2 limitation; "nothing from 0.0.0.0/0" verified)*
-
-### Evidence
-
-- [x] Step 11 "Your turn": `desiredCount` to 3 and back to 2 - `06` *(the guide names `events` as the evidence; Floci records none, so the counts are the evidence)*
-- [x] `outputs/lab-04-lab03-linkage.txt` with `LOOP CLOSED` - `12`
-- [x] Screenshots for Checkpoints 2, 3 and 4 - `03`, `04`, `05`
-
-### Hygiene and written work
-
-- [x] `configs/lab-04.env` exists, 17 exports, no empty values or `None` - `07`, `08` *(the first generation, in commit `f48dc83`, had two `None` because the service did not yet exist; regenerated, and committed with this report)*
-- [x] `verify-lab-04.sh` reports `FAIL=0` or explained benign failures - `PASS=37 FAIL=1`, explained, `07`
-- [x] `lab-04-cleanup.sh` exists, passes `bash -n`, not run - `08`
-- [x] `git status --short` shows nothing under `outputs/` - `08` (`ls-files outputs/` lists only `.gitkeep`)
-- [x] `git check-ignore -v outputs/lab-04-assumed-role.json` names the rule and line - `08`
-- [x] `notes/lab-04-notes.md` answers all review questions in prose
-- [x] `labs/lab-04-ecs/exercises.md` contains all five exercises
-- [x] Every Floci limitation hit is recorded with what real AWS would do - Section 7, `README.md`
-
-### Understanding
-
-- [x] Four ECS objects, and which one scaling changes - notes, question 1
-- [x] Which symptom points at which role - notes, question 3
-- [x] Why the rule names a group, before Lab 06 exists - notes, question 4
-- [x] What Fargate removed from Lab 3's model, and what it did not - notes, question 5
-
-**Every box is satisfied.** Three carry the qualification stated inline:
-- the group-reference rule (a Floci storage limitation)
-- the Step 11 events evidence (Floci records no events)
-- the env file's first generation, regenerated and recommitted
-
----
-
-## 9. Reproducing this lab
+## 8. Reproducing this lab
 
 ```bash
 cd ~/Desktop/aws-floci-course

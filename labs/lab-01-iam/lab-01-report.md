@@ -1,13 +1,4 @@
 # Lab 01 - Identity and Access Management
-## Lab Report
-
-**Student:** Kelden P. Dorji
-**Project:** University Student Management System (USMS)
-**Environment:** Floci 1.5.34 (local AWS emulator), account `000000000000`, region `us-east-1`
-**Repository:** `aws-floci-course`
-**Verification:** `scripts/utilities/verify-lab-01.sh` -> **PASS=34 FAIL=0**
-
----
 
 ## 1. Summary
 
@@ -386,91 +377,7 @@ have been created and listed just as happily.
 
 ---
 
-## 8. Section 10 - Lab Assessment Checklist
-
-### Environment
-
-- [x] Docker installed and daemon running - `03`
-- [x] Docker Compose v2 available - `03`
-- [x] Project structure created BEFORE Floci was started - `00`
-- [x] `.gitignore` written and committed as the FIRST commit - `01`, `15`
-- [x] Proved `outputs/.gitkeep` is tracked (the `outputs/*` negation works) - `01`
-- [x] Explained why `FLOCI_STORAGE_MODE` defaults to memory and why that matters - notes
-- [x] `docker-compose.yml` written with hybrid storage and an absolute bind mount - `02`, `06`
-- [x] `floci-up.sh` brings the environment up and verifies its own mount - `02`
-- [x] AWS CLI v2 installed (`2.36.23`) - `03`
-- [x] Profile `floci` configured with `endpoint_url` - `03`
-- [x] `aws sts get-caller-identity` returns account `000000000000` - `03`
-- [x] Proved with `--debug` that requests go to `localhost:4566` - `04`
-- [x] Proved that stopping Floci breaks the CLI - `04`
-- [x] **PROVED PERSISTENCE**: created a user, restarted, found it again - `05`
-- [x] `~/floci-data` contains real files - `05`, `06`
-- [x] `floci-storage-check.sh` passes all six sections - `06`
-- [x] `whoami.sh` works and fails loudly on a wrong account - `03` *(success path evidenced; the failure branch is implemented and was never triggered, since the account was never wrong)*
-- [x] `README.md` written - repo root
-- [x] Part A committed to Git - `15`
-
-### IAM - Identities
-
-- [x] 3 groups created - `07`
-- [x] 3 users created and tagged - `07`; tags `Project=USMS` plus `Role=Administrator|Developer|Auditor` verified on all three
-- [x] Each user placed in the correct group - `07`
-- [x] Membership verified from BOTH directions - `07`
-
-### IAM - Policies
-
-- [x] AWS managed policy attached to auditors (`ReadOnlyAccess`) - `07`
-- [x] `USMSDeveloperBase` written, validated locally, created, attached to 2 groups - `07`
-- [x] `USMSStudentDataReadWrite` written with correct bucket AND object ARNs - `07`, policy file
-- [x] Inline policy `USMSSelfManageCredentials` on `usms-dev-01` - `09`
-- [x] Explained the difference between attached and inline in notes - notes
-- [x] Policy version v2 created and set as default - `09`
-- [x] Confirmed v1 still exists and could be rolled back to - `09`, `17`
-
-### IAM - Roles
-
-- [x] `usms-ec2-app-role` with an `ec2.amazonaws.com` trust policy - `10`
-- [x] `usms-lambda-exec-role` with a `lambda.amazonaws.com` trust policy - `10`
-- [x] `usms-developer-role` with an account-principal trust policy - `10`
-- [x] Instance profile `usms-ec2-app-profile` created and contains the role - `10`
-- [x] `sts assume-role` executed; temporary credentials obtained - `11`
-- [x] Identified the `ASIA` prefix and the `SessionToken` - `11`
-- [x] Returned to normal identity afterwards (`whoami.sh` confirms) - `11`
-
-### Credentials and safety
-
-- [x] Access key created for `usms-dev-01`, redirected straight into `outputs/` - `12`
-- [x] `chmod 600` applied - `12`
-- [x] `git check-ignore` names the rule that protects the key file - `12`
-- [x] Second profile `usms-dev` created and tested - `12`
-- [x] Can explain the 5-step key rotation procedure - notes
-
-### CLI skills demonstrated
-
-- [x] Used `--output json`, `table` AND `text` - `08`
-- [x] Used `--query` to extract a single value into a variable - `08`
-- [x] Used a JMESPath filter `[?...]` - `08`, `10`
-- [x] Used `file://` to submit a policy document - every `create-policy` call; documented in `exercises.md`
-- [x] Used `--generate-cli-skeleton` - `08`; output in `templates/`
-- [x] Checked an exit code with `$?` - `08` (`0` then `254`)
-
-### Wrap-up
-
-- [x] `configs/lab-01.env` generated with real ARNs, every value populated, no secrets - `13`
-- [x] Snapshot saved - `floci snapshot` unavailable on this build; filesystem fallback used: `~/floci-data-lab-01.tar.gz` (9.3K)
-- [x] `verify-lab-01.sh` passes with `FAIL=0` - `14`, and again at v3 in `17`
-- [x] `labs/lab-01-iam/README.md` written - this directory
-- [x] Git history shows `.gitignore` as the oldest commit - `15`
-- [x] Exercises 1-5 attempted and documented - `16`, `17`, `exercises.md`
-
-**All boxes satisfied.** Two carry the qualification noted inline: the `whoami.sh`
-failure branch was never triggered because the account was never wrong, and the
-snapshot used the lab's documented filesystem fallback because `floci snapshot`
-is unavailable on server 1.5.34.
-
----
-
-## 9. Reproducing this lab
+## 8. Reproducing this lab
 
 ```bash
 source ~/aws-floci-course/configs/course.env
@@ -490,8 +397,8 @@ real AWS could be proven (Section 3.3). This appendix is a separate,
 independently graded exercise, the AWS Skill Builder hands-on lab "IAM Users
 and Groups," run against a real AWS account through an institutional Vocareum
 sandbox. It is unrelated to the `usms-` foundation above: no resource from
-this lab (Steps 16-33 or Exercises 1-5) appears in it, and it does not count
-toward any Section 10 checklist item.
+this lab (Steps 16-33 or Exercises 1-5) appears in it, and it is separate
+from the evidence above.
 
 The lab provisions three users (`user-1`, `user-2`, `user-3`) and three groups
 (`EC2-Admin`, `EC2-Support`, `S3-Support`), and its tasks are to inspect the

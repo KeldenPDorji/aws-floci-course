@@ -36,16 +36,24 @@ limitation (problem 5 below), not a build error.
 
 ## Evidence
 
-The four items Section 9 of the lab names as evidence, plus the three
-required checkpoint screenshots.
+### 1. Checkpoint 5 - public vs. private route tables
 
-- [x] Environment resumed under Compose, storage check green - `screenshots/lab02-02-identity-and-vpc.png`
-- [x] Checkpoint 5 - public vs. private route table read-back - `screenshots/lab02-06-checkpoint5-public-vs-private.png`
-- [x] Checkpoint 8 - NAT gateway and S3 endpoint - `screenshots/lab02-09-checkpoint8-nat-and-endpoint.png`
-- [x] Checkpoint 9 - persistence proof - `screenshots/lab02-11-checkpoint9-persistence.png`
-- [x] `verify-lab-02.sh` result - `screenshots/lab02-13-verify-lab-02.png`, `screenshots/lab02-16-exercises-4-5.png`
+![Public subnet's default route ends in igw-b57737b4; private subnet's ends in None](../../screenshots/lab02-06-checkpoint5-public-vs-private.png)
 
-All 16 screenshots are displayed in context in [lab-02-report.md](lab-02-report.md).
+### 2. Checkpoint 8 - NAT gateway and S3 endpoint
+
+![NAT gateway available in the public subnet; private route points at it; S3 endpoint available](../../screenshots/lab02-09-checkpoint8-nat-and-endpoint.png)
+
+### 3. Checkpoint 9 - persistence
+
+![Pre- and post-restart snapshots identical; PERSISTENCE PROVEN](../../screenshots/lab02-11-checkpoint9-persistence.png)
+
+### 4. verify-lab-02.sh
+
+![verify-lab-02.sh after Exercise 5: PASS=32 FAIL=1](../../screenshots/lab02-16-exercises-4-5.png)
+
+All 16 screenshots are displayed in context in
+[lab-02-report.md](lab-02-report.md).
 
 ## Problems I hit and how I fixed them
 

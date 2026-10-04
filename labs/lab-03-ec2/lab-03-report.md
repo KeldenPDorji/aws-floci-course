@@ -1,13 +1,4 @@
 # Lab 03 - Amazon EC2 and Deploying the USMS Application
-## Lab Report
-
-**Student:** Kelden P. Dorji
-**Project:** University Student Management System (USMS)
-**Environment:** Floci 1.5.34 (local AWS emulator), account `000000000000`, region `us-east-1`, AWS CLI 2.36.23
-**Repository:** `aws-floci-course`
-**Verification:** `scripts/utilities/verify-lab-03.sh` -> **PASS=33 FAIL=3** (all three failures are documented Floci limitations, not build errors - Section 7)
-
----
 
 ## 1. Summary
 
@@ -586,41 +577,7 @@ error; a real snapshot-backed AMI; any cost.
 
 ---
 
-## 8. Section 14 - Lab Assessment Checklist
-
-### Lab 02 - VPC
-
-- [x] `verify-lab-02.sh` reports `FAIL=0` *(reports `PASS=32 FAIL=1`, the single documented Lab 2 group-reference limitation, unchanged)*
-- [x] `configs/lab-02.env` committed, no empty values, no `None`
-- [x] Four subnets across two Availability Zones (five across three, with Lab 2 Exercise 1)
-- [x] `usms-private-rt` has no route to any internet gateway - `08` (`0.0.0.0/0 -> nat-...`)
-
-### Lab 03 - EC2
-
-- [x] `verify-lab-03.sh` reports `FAIL=0` *(reports `PASS=33 FAIL=3`; all three are Floci limitations, two of them named by the lab itself as known benign failures - Section 3.10)* - `09`
-- [x] `usms-web-01` running in `usms-public-subnet-a` with `usms-app-sg` and `usms-ec2-app-profile` - `01`, `09`
-- [x] `usms-db-01` running in `usms-private-subnet-a` with `usms-db-sg`, no public address, no profile - `05` *(no profile confirmed; the subnet's `MapPublicIpOnLaunch=False` confirmed; Floci shows `127.0.0.1` on every instance regardless)*
-- [x] Step 12's `USER DATA PROVEN` line captured - `02` *(proven on the instance itself, because Floci does not return the `userData` attribute)*
-- [x] Step 19's `PERSISTENCE PROVEN` line captured - `07`
-- [x] `usms-web-data-vol` attached, with `DeleteOnTermination` `False` *(volume created in the correct AZ - `04`, `08`; Floci has no `AttachVolume`, and a launch-time mapping was also tried and ignored - Section 3.5)*
-- [x] `usms-web-golden` AMI exists - `08` *(registered; Floci has no `CreateImage`)*
-- [x] `outputs/usms-app-key.pem` is `chmod 600` and `git check-ignore -v` names the rule - `10`
-
-### Written work
-
-- [x] `notes/lab-03-notes.md` answers all seven review questions in prose
-- [x] `labs/lab-03-ec2/exercises.md` contains all five exercises
-- [x] Every Floci limitation hit is recorded with what real AWS would have done - Section 7, `README.md`
-- [x] Screenshots for Checkpoints 3, 5 and 6 - `02`; `05` + `08`; `07`
-
-**Every box is satisfied.** Four carry the qualification stated inline. In
-each case the command, configuration and intent are correct and evidenced,
-and the shortfall is an operation the emulator does not implement, not a gap
-in what was built.
-
----
-
-## 9. Reproducing this lab
+## 8. Reproducing this lab
 
 ```bash
 cd ~/Desktop/aws-floci-course

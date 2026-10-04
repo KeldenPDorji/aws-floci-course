@@ -1,13 +1,4 @@
 # Lab 02 - Virtual Private Cloud and Networking
-## Lab Report
-
-**Student:** Kelden P. Dorji
-**Project:** University Student Management System (USMS)
-**Environment:** Floci 1.5.34 (local AWS emulator), account `000000000000`, region `us-east-1`
-**Repository:** `aws-floci-course`
-**Verification:** `scripts/utilities/verify-lab-02.sh` -> **PASS=32 FAIL=1** (the one failure is a documented Floci limitation, not a build error)
-
----
 
 ## 1. Summary
 
@@ -415,54 +406,7 @@ mistake in a single command.
 
 ---
 
-## 8. Section 14 - Lab Assessment Checklist
-
-### Environment
-
-- [x] Floci runs under Docker Compose, `floci-storage-check.sh` reports `FAIL=0` - confirmed at Step 1, re-confirmed by every subsequent `verify-lab-02.sh` run
-- [x] `whoami.sh` reports account `000000000000` - `02`
-- [x] No `floci start` in shell history for this lab - only `floci-up.sh` / `floci-down.sh` used throughout
-
-### Resources
-
-- [x] `usms-vpc` exists with CIDR `10.0.0.0/16`, DNS support and hostnames both enabled - `02`, `03`
-- [x] `usms-igw` exists and is attached - `03`
-- [x] At least three subnets across at least two AZs - five subnets across three AZs (`04`, `05`, exercises)
-- [x] `usms-public-subnet-a` auto-assigns public IPv4; `usms-private-subnet-a` does not - `04`
-- [x] `usms-public-rt` has a `0.0.0.0/0` route to the internet gateway - `05`, `06`
-- [x] `usms-private-rt` has no route to any internet gateway - `06`
-- [x] `usms-app-sg` allows 80, 443, and SSH from a restricted source - `07` (SSH further restricted to a bastion host in Exercise 2)
-- [x] `usms-db-sg` allows 5432 sourced from `usms-app-sg` by group reference *(the command, JSON document, and design are correct and verified in `07`; the Floci build does not persist the `UserIdGroupPairs` reference, confirmed independently three times and documented in Section 7 - the intended, correct configuration is fully evidenced even though the live object does not reflect it)*
-- [x] `usms-private-nacl` is associated with the private subnet and is not the default ACL - `08`
-- [x] `usms-nat` and `usms-s3-endpoint` exist - `09`
-- [x] Every resource carries `Project=USMS` and a `Name` tag - `10`
-
-### Evidence and hygiene
-
-- [x] `configs/lab-02.env` exists, committed, no empty values or `None` - `12` (one expected gap before Exercise 5), `16` (populated after)
-- [x] `verify-lab-02.sh` exists and reports `FAIL=0` *(reports `FAIL=1` on this Floci build - the single documented group-reference gap above; every other check is `ok`, including all 21 resource checks, tagging, and file/Git hygiene)* - `13`, `16`
-- [x] `scripts/cleanup/lab-02-cleanup.sh` exists, passes `bash -n`, has not been run
-- [x] `git status --short` shows nothing under `outputs/` - `14`
-- [x] `git check-ignore -v outputs/lab-02-assumed-role.json` names the rule and line - `14`
-- [x] `notes/lab-02-notes.md` answers all seven review questions in prose
-- [x] `labs/lab-02-vpc/exercises.md` contains all five exercises with commands and output
-- [x] Screenshots for Checkpoints 5, 8, and 9 - `06`, `09`, `11`
-
-### Understanding
-
-- [x] Can state what makes a subnet public without the word "public" - notes
-- [x] Can explain why `usms-db-sg` names a group instead of an address range - notes
-- [x] Can explain what breaks with no ephemeral-port NACL rule - notes
-
-**Every box is satisfied.** Two carry the qualification stated inline: the
-`usms-db-sg` group-reference box and the `verify-lab-02.sh FAIL=0` box are
-both affected by the same single, three-times-confirmed Floci limitation
-(Section 7) rather than any gap in the command, document, or design that was
-actually built.
-
----
-
-## 9. Reproducing this lab
+## 8. Reproducing this lab
 
 ```bash
 source ~/aws-floci-course/configs/course.env
@@ -484,8 +428,8 @@ exercise - the AWS Academy hands-on lab "Build your VPC and Launch a Web
 Server" - built through the real AWS Management Console on a real AWS
 Academy account, `453226350599`, region `us-east-1`. No resource from the
 CLI-based lab above appears in it: the VPC is `lab-vpc`
-(`vpc-08f64dcf464781f7a`, `10.0.0.0/16`), not `usms-vpc`, and it does not
-count toward Section 14's checklist.
+(`vpc-08f64dcf464781f7a`, `10.0.0.0/16`), not `usms-vpc`, and it is
+separate from the evidence above.
 
 ### The build
 
