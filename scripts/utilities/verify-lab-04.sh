@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 # Verify every Lab 04 artefact exists and is configured correctly.
 # Exit 1 if anything is missing. Read-only; safe to run at any time.
+#
+# 39 checks (PASS+FAIL=39), with or without Lab 05. An undocumented count lets a check
+# vanish silently; a stated one makes a missing or extra line visible at once.
+# On Floci 1.5.34 expect PASS=38 FAIL=1: "sourced from its upstream group" fails because
+# Floci accepts group references and never stores them.
 set -uo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
@@ -10,6 +15,8 @@ source "$REPO_ROOT/configs/lab-01.env" 2>/dev/null || true
 source "$REPO_ROOT/configs/lab-02.env" 2>/dev/null || true
 source "$REPO_ROOT/configs/lab-03.env" 2>/dev/null || true
 source "$REPO_ROOT/configs/lab-04.env" 2>/dev/null || true
+# Optional: a student who has done Lab 04 but not Lab 05 has no lab-05.env.
+source "$REPO_ROOT/configs/lab-05.env" 2>/dev/null || true
 
 : "${USMS_APP_SG:=none}"
 : "${USMS_PRIVATE_SUBNET_A:=none}"
@@ -22,6 +29,18 @@ source "$REPO_ROOT/configs/lab-04.env" 2>/dev/null || true
 : "${USMS_ECS_EXEC_ROLE:=usms-ecs-exec-role}"
 : "${USMS_ECS_TASK_ROLE:=usms-ecs-task-role}"
 : "${USMS_LOG_GROUP_ENROLMENT:=/usms/ecs/enrolment}"
+: "${USMS_ALB_SG:=}"
+
+# The property: the enrolment tasks accept traffic only from their ONE upstream group,
+# never from an address range. Lab 04 built that upstream as usms-app-sg; Lab 05 moved
+# it to usms-alb-sg. The check follows whichever architecture this repository is in.
+if [ -n "$USMS_ALB_SG" ] && [ "$USMS_ALB_SG" != "None" ]; then
+  UPSTREAM_SG="$USMS_ALB_SG";  UPSTREAM_NAME="usms-alb-sg"
+  RETIRED_SG="$USMS_APP_SG";   RETIRED_NAME="usms-app-sg"
+else
+  UPSTREAM_SG="$USMS_APP_SG";  UPSTREAM_NAME="usms-app-sg"
+  RETIRED_SG="none";           RETIRED_NAME="no retired group (pre-Lab 05)"
+fi
 
 PASS=0; FAIL=0
 check() {
@@ -93,8 +112,11 @@ check "service desiredCount is 2 (one task per Availability Zone)" \
 
 echo "== Lab 04 networking =="
 check "usms-enrolment-sg exists"  "aws ec2 describe-security-groups --group-ids $USMS_ENROLMENT_SG"
-check "usms-enrolment-sg is sourced from usms-app-sg (not a CIDR)" \
-  "test \"\$(aws ec2 describe-security-groups --group-ids $USMS_ENROLMENT_SG --query 'SecurityGroups[0].IpPermissions[0].UserIdGroupPairs[0].GroupId' --output text)\" = $USMS_APP_SG"
+check "usms-enrolment-sg is sourced from its upstream group $UPSTREAM_NAME (not a CIDR)" \
+  "aws ec2 describe-security-groups --group-ids $USMS_ENROLMENT_SG --query 'SecurityGroups[0].IpPermissions[].UserIdGroupPairs[].GroupId' --output text | grep -qw $UPSTREAM_SG"
+# Without this, the check above still passes while BOTH paths exist.
+check "usms-enrolment-sg no longer admits $RETIRED_NAME" \
+  "! aws ec2 describe-security-groups --group-ids $USMS_ENROLMENT_SG --query 'SecurityGroups[0].IpPermissions[].UserIdGroupPairs[].GroupId' --output text | grep -qw $RETIRED_SG"
 check "usms-enrolment-sg admits NOTHING from 0.0.0.0/0" \
   "! aws ec2 describe-security-groups --group-ids $USMS_ENROLMENT_SG --query 'SecurityGroups[0].IpPermissions[].IpRanges[].CidrIp' --output text | grep -q '0.0.0.0/0'"
 

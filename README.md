@@ -36,6 +36,7 @@ source configs/course.env
 | 02  | VPC   | [x] complete | [lab-02-report.md](labs/lab-02-vpc/lab-02-report.md) |
 | 03  | EC2   | [x] complete | [lab-03-report.md](labs/lab-03-ec2/lab-03-report.md) |
 | 04  | ECS   | [x] complete | [lab-04-report.md](labs/lab-04-ecs/lab-04-report.md) |
+| 05  | ECS + ALB | [x] complete | [lab-05-report.md](labs/lab-05-ecs-alb/lab-05-report.md) |
 
 ### Lab 01 verification
 
@@ -108,6 +109,40 @@ source configs/lab-02.env
 source configs/lab-03.env
 source configs/lab-04.env
 ./scripts/utilities/verify-lab-04.sh
+```
+
+Since Lab 05's Exercise 2, this script asserts the enrolment tasks' *current*
+upstream group. That is `usms-alb-sg` when `configs/lab-05.env` exists, and
+`usms-app-sg` otherwise. It now reports `PASS=38  FAIL=1` (39 checks), with
+the same single Floci failure.
+
+### Lab 05 verification
+
+![verify-lab-05.sh showing PASS=46 FAIL=4, lab-05.env fully populated, cleanup syntax OK and Git hygiene](screenshots/lab05-05-verify-env-and-hygiene.png)
+
+The four failures are documented Floci limitations, not build errors:
+- group references in security group rules are not stored
+- `revoke-security-group-ingress` returns `True` and removes nothing, so the
+  Step 13 cutover could not take effect
+- `healthCheckGracePeriodSeconds` is not stored
+- the service's `deployments` list is always `null`
+
+This build models ELBv2 fully and runs health checks and forwarding inside
+the Docker network, but the load balancer's DNS name does not resolve from
+the host. See [lab-05-report.md](labs/lab-05-ecs-alb/lab-05-report.md)
+Sections 3.6, 3.7, 3.9 and 7.
+
+Reproduce with:
+
+```bash
+source configs/course.env
+./scripts/setup/floci-up.sh
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+source configs/lab-04.env
+source configs/lab-05.env
+./scripts/utilities/verify-lab-05.sh
 ```
 
 ## Conventions

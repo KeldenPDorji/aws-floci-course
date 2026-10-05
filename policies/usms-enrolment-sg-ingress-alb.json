@@ -1,0 +1,13 @@
+[
+  {
+    "IpProtocol": "tcp",
+    "FromPort": 80,
+    "ToPort": 80,
+    "UserIdGroupPairs": [
+      {
+        "GroupId": "sg-8f6bfa2a32f0f9d39",
+        "Description": "HTTP from usms-alb-sg - the load balancer is the only client of the enrolment tasks"
+      }
+    ]
+  }
+]
