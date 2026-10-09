@@ -37,6 +37,7 @@ source configs/course.env
 | 03  | EC2   | [x] complete | [lab-03-report.md](labs/lab-03-ec2/lab-03-report.md) |
 | 04  | ECS   | [x] complete | [lab-04-report.md](labs/lab-04-ecs/lab-04-report.md) |
 | 05  | ECS + ALB | [x] complete | [lab-05-report.md](labs/lab-05-ecs-alb/lab-05-report.md) |
+| 06  | ECS Auto Scaling | [x] complete | [lab-06-report.md](labs/lab-06-ecs-autoscaling/lab-06-report.md) |
 
 ### Lab 01 verification
 
@@ -143,6 +144,39 @@ source configs/lab-03.env
 source configs/lab-04.env
 source configs/lab-05.env
 ./scripts/utilities/verify-lab-05.sh
+```
+
+Since Lab 06 moved the emulator to Floci 2.2.0, this script reports
+`PASS=48  FAIL=2`. The grace period and the `deployments` list are now
+stored, and the two security group limitations remain.
+
+### Lab 06 verification
+
+![verify-lab-06.sh showing PASS=39 FAIL=3, Lab 05 unchanged, lab-06.env fully populated, cleanup syntax OK and Git hygiene](screenshots/lab06-04-verify-env-and-hygiene.png)
+
+Floci 1.5.34 has no Application Auto Scaling, so Lab 06 runs on **Floci
+2.2.0**. `docker-compose.yml` is pinned to `floci/floci:2.2.0`, and the Lab
+1-5 state was verified to load unchanged first. The scaling loop really runs
+on 2.2.0: an alarm invoked the step policy and `desiredCount` went 2 -> 10,
+with `Cause` strings naming the alarm and the policy.
+
+The three failures are the scheduled-action checks: this build answers
+`PutScheduledAction` with `UnsupportedOperation`. See
+[lab-06-report.md](labs/lab-06-ecs-autoscaling/lab-06-report.md) Sections
+3.1, 3.5, 3.6 and 7.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+source configs/lab-04.env
+source configs/lab-05.env
+source configs/lab-06.env
+./scripts/utilities/verify-lab-06.sh
 ```
 
 ## Conventions

@@ -9,7 +9,9 @@ name: floci-course
 
 services:
   floci:
-    image: floci/floci:latest
+    # Pinned (Lab 06): 1.5.34 had no Application Auto Scaling. 2.2.0 adds it and
+    # loads the Lab 01-05 state unchanged (verified on a copy of ~/floci-data).
+    image: floci/floci:2.2.0
     # Named "floci" on purpose: a stray `floci start` then fails loudly with a
     # name conflict instead of quietly shadowing this container with an empty one.
     container_name: floci
