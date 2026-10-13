@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: usms-crasher
+  namespace: usms
+  labels:
+    app: usms-crasher
+spec:
+  containers:
+    - name: crasher
+      image: busybox:1.36
+      command: ["sh", "-c", "echo 'usms-crasher starting'; echo 'fatal: no database configured' >&2; exit 1"]

@@ -38,6 +38,7 @@ source configs/course.env
 | 04  | ECS   | [x] complete | [lab-04-report.md](labs/lab-04-ecs/lab-04-report.md) |
 | 05  | ECS + ALB | [x] complete | [lab-05-report.md](labs/lab-05-ecs-alb/lab-05-report.md) |
 | 06  | ECS Auto Scaling | [x] complete | [lab-06-report.md](labs/lab-06-ecs-autoscaling/lab-06-report.md) |
+| 07  | EKS   | [x] complete | [lab-07-report.md](labs/lab-07-eks/lab-07-report.md) |
 
 ### Lab 01 verification
 
@@ -177,6 +178,36 @@ source configs/lab-04.env
 source configs/lab-05.env
 source configs/lab-06.env
 ./scripts/utilities/verify-lab-06.sh
+```
+
+### Lab 07 verification
+
+![verify-lab-07.sh showing PASS=30 FAIL=0, lab-07.env fully populated with 21 exports, smoke test passed and Git hygiene](screenshots/lab07-05-verify-env-and-hygiene.png)
+
+Lab 07 runs on support path A. `aws eks create-cluster` starts a real k3s
+1.30 cluster on `https://localhost:6500`, so Deployments, DNS discovery,
+rollouts and the failure drills really run. The managed node group is a
+record only, and every pod runs on the single k3s server node. `kubectl`
+authenticates as `usms-developer-role` through an EKS access entry. That
+needs `authenticationMode=API_AND_CONFIG_MAP` at cluster creation, which
+the request template sets. See
+[lab-07-report.md](labs/lab-07-eks/lab-07-report.md) Sections 3.3, 3.4,
+6 and 7.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+source configs/lab-04.env
+source configs/lab-05.env
+source configs/lab-06.env
+source configs/lab-07.env
+aws eks wait cluster-active --name usms-eks-cluster && ./scripts/utilities/wait-kube.sh 300
+./scripts/utilities/verify-lab-07.sh
 ```
 
 ## Conventions
