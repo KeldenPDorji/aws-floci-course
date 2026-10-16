@@ -1,0 +1,35 @@
+[
+  {
+    "IpProtocol": "tcp", "FromPort": 443, "ToPort": 443,
+    "PrefixListIds": [
+      { "PrefixListId": "pl-63a5400a", "Description": "1. S3 via the Lab 02 gateway endpoint - Lab 10's transcripts" }
+    ],
+    "IpRanges": [
+      { "CidrIp": "0.0.0.0/0", "Description": "2. HTTPS to AWS service endpoints, incl. STS for the instance profile - narrow to interface endpoints on real AWS" }
+    ]
+  },
+  {
+    "IpProtocol": "tcp", "FromPort": 80, "ToPort": 80,
+    "UserIdGroupPairs": [
+      { "GroupId": "sg-8f6bfa2a32f0f9d39", "Description": "3. the enrolment API - since Lab 05 that is the load balancer, not the tasks" }
+    ]
+  },
+  {
+    "IpProtocol": "tcp", "FromPort": 5432, "ToPort": 5432,
+    "UserIdGroupPairs": [
+      { "GroupId": "sg-3c89a570a2ccd5b86", "Description": "4. PostgreSQL to the data tier" }
+    ]
+  },
+  {
+    "IpProtocol": "udp", "FromPort": 53, "ToPort": 53,
+    "IpRanges": [
+      { "CidrIp": "10.0.0.2/32", "Description": "5a. DNS to the Amazon resolver (VPC base + 2) - UDP is the normal path" }
+    ]
+  },
+  {
+    "IpProtocol": "tcp", "FromPort": 53, "ToPort": 53,
+    "IpRanges": [
+      { "CidrIp": "10.0.0.2/32", "Description": "5b. DNS over TCP - large or truncated answers fall back to it" }
+    ]
+  }
+]

@@ -40,6 +40,7 @@ source configs/course.env
 | 06  | ECS Auto Scaling | [x] complete | [lab-06-report.md](labs/lab-06-ecs-autoscaling/lab-06-report.md) |
 | 07  | EKS   | [x] complete | [lab-07-report.md](labs/lab-07-eks/lab-07-report.md) |
 | 08  | EKS scaling and exposure | [x] complete | [lab-08-report.md](labs/lab-08-eks-scaling/lab-08-report.md) |
+| 09  | Security review (IAM + security groups) | [x] complete | [lab-09-report.md](labs/lab-09-security/lab-09-report.md) |
 
 ### Lab 01 verification
 
@@ -242,6 +243,40 @@ source configs/lab-07.env
 source configs/lab-08.env
 aws eks wait cluster-active --name usms-eks-cluster && ./scripts/utilities/wait-kube.sh 300
 ./scripts/utilities/verify-lab-08.sh
+```
+
+### Lab 09 verification
+
+![verify-lab-09.sh showing PASS=49 FAIL=1, lab-09.env populated with no access key ID, no unexpanded variables in policies/ and Git hygiene](screenshots/lab09-04-verify-env-and-hygiene.png)
+
+Lab 09 runs on support path A. The IAM simulator evaluates conditions and
+permissions boundaries, so the scoped `iam:PassRole` and the boundary on
+`usms-deploy-role` are shown with IAM's own decisions. Nothing is enforced
+on real calls, and security groups carry no traffic.
+
+The one failure is `usms-db-01 has NO public address`: Floci gives every
+instance the placeholder address `127.0.0.1`.
+
+Before its baseline, Lab 09 repaired `usms-db-sg` and `usms-enrolment-sg`.
+Floci 1.5.34 had kept their group-referenced rules with no source, and they
+were re-applied from the committed documents. As a result,
+`verify-lab-02.sh` and `verify-lab-04.sh` now report `FAIL=0`. See
+[lab-09-report.md](labs/lab-09-security/lab-09-report.md) Sections 3.1,
+3.7 and 6.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-03.env
+source configs/lab-04.env
+source configs/lab-05.env
+source configs/lab-06.env
+source configs/lab-09.env
+./scripts/utilities/verify-lab-09.sh
 ```
 
 ## Conventions
