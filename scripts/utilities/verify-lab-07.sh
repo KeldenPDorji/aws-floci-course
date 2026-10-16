@@ -57,12 +57,14 @@ check "nodegroup usms-eks-nodes is ACTIVE" \
 echo "== Kubernetes =="
 check "kubectl reaches an API server" "kubectl get --raw /readyz --request-timeout=10s"
 check "namespace usms exists" "kubectl get namespace usms"
-check "usms-enrolment has 2 ready replicas" \
-  "test \"\$(kubectl get deploy usms-enrolment -n usms -o jsonpath='{.status.readyReplicas}')\" = 2"
-check "usms-results has 2 ready replicas" \
-  "test \"\$(kubectl get deploy usms-results -n usms -o jsonpath='{.status.readyReplicas}')\" = 2"
-check "usms-gateway has 1 ready replica" \
-  "test \"\$(kubectl get deploy usms-gateway -n usms -o jsonpath='{.status.readyReplicas}')\" = 1"
+# Since Lab 08 an HPA owns replicas on enrolment and results (min 2), so "at least 2" is the
+# invariant; Lab 08 Exercise 2 raised the gateway to 2, so it is compared with the manifest.
+check "usms-enrolment has at least 2 ready replicas" \
+  "test \"\$(kubectl get deploy usms-enrolment -n usms -o jsonpath='{.status.readyReplicas}')\" -ge 2"
+check "usms-results has at least 2 ready replicas" \
+  "test \"\$(kubectl get deploy usms-results -n usms -o jsonpath='{.status.readyReplicas}')\" -ge 2"
+check "usms-gateway has as many ready replicas as 40-gateway.yaml declares" \
+  "test \"\$(kubectl get deploy usms-gateway -n usms -o jsonpath='{.status.readyReplicas}')\" = \"\$(grep -m1 '^  replicas:' manifests/lab-07/40-gateway.yaml | awk '{print \$2}')\""
 check "service usms-enrolment has at least 2 endpoints" \
   "test \"\$(kubectl get endpoints usms-enrolment -n usms -o jsonpath='{range .subsets[*].addresses[*]}{.ip}{\"\\n\"}{end}' | grep -c .)\" -ge 2"
 check "usms-enrolment declares a cpu request (Lab 08 needs it)" \

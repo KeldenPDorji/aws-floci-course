@@ -237,9 +237,14 @@ services do. That is more than one line, so I pointed the probe at `/`.
   - preferred `podAntiAffinity`: weight 100, same topology key, same
     `app: usms-enrolment` selector
 - **It wrote one new object,**
-  [`21-enrolment-pdb.yaml`](../../manifests/lab-07/21-enrolment-pdb.yaml): a
-  `PodDisruptionBudget` `usms-enrolment-pdb` with `minAvailable: 1` and the
-  same selector.
+  `manifests/lab-07/21-enrolment-pdb.yaml`: a `PodDisruptionBudget`
+  `usms-enrolment-pdb` with `minAvailable: 1` and the same selector.
+
+  *Lab 08 note:* Lab 08 Step 12 redefines `usms-enrolment-pdb` as
+  `maxUnavailable: 1` in `manifests/lab-08/30-pdb-gateway.yaml`, which suits
+  a replica count that the HPA now moves. Two files defining one object is
+  the drift Lab 08 Step 5 warns about, so `21-enrolment-pdb.yaml` was removed
+  then ([Lab 08 report, 3.5](../lab-08-eks-scaling/lab-08-report.md#35-node-group-nodeselector-and-disruption-budgets-steps-10-12)).
 
 The third requirement was already met. `20-enrolment.yaml` injects
 `spec.nodeName` as `NODE_NAME` through the downward API, so every response

@@ -39,6 +39,7 @@ source configs/course.env
 | 05  | ECS + ALB | [x] complete | [lab-05-report.md](labs/lab-05-ecs-alb/lab-05-report.md) |
 | 06  | ECS Auto Scaling | [x] complete | [lab-06-report.md](labs/lab-06-ecs-autoscaling/lab-06-report.md) |
 | 07  | EKS   | [x] complete | [lab-07-report.md](labs/lab-07-eks/lab-07-report.md) |
+| 08  | EKS scaling and exposure | [x] complete | [lab-08-report.md](labs/lab-08-eks-scaling/lab-08-report.md) |
 
 ### Lab 01 verification
 
@@ -208,6 +209,39 @@ source configs/lab-06.env
 source configs/lab-07.env
 aws eks wait cluster-active --name usms-eks-cluster && ./scripts/utilities/wait-kube.sh 300
 ./scripts/utilities/verify-lab-07.sh
+```
+
+Since Lab 08, enrolment and results are owned by HPAs (minimum 2), and
+Exercise 2 runs the gateway at 2 replicas. The script therefore checks "at
+least 2" for enrolment and results, and "as many as `40-gateway.yaml`
+declares" for the gateway. It still reports `PASS=30  FAIL=0`.
+
+### Lab 08 verification
+
+![verify-lab-08.sh showing PASS=33 FAIL=1, lab-08.env fully populated with 19 exports, kubectl diff clean and Git hygiene](screenshots/lab08-05-verify-env-and-hygiene.png)
+
+Lab 08 runs on support path A. The HPA scaled `usms-enrolment` 2 -> 3 under
+real load and back after its 300 s window. k3s ServiceLB gave the gateway a
+real `LoadBalancer` address, reachable inside the cluster.
+
+The one failure is "node group maxSize was raised to 6". Floci 2.2.0 answers
+`UpdateNodegroupConfig` with `UnknownOperationException`. This build also
+ignores the `_lb_ports_` tag and runs no ingress controller. See
+[lab-08-report.md](labs/lab-08-eks-scaling/lab-08-report.md) Sections 3.1,
+3.5, 3.6 and 7.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-02.env
+source configs/lab-04.env
+source configs/lab-07.env
+source configs/lab-08.env
+aws eks wait cluster-active --name usms-eks-cluster && ./scripts/utilities/wait-kube.sh 300
+./scripts/utilities/verify-lab-08.sh
 ```
 
 ## Conventions
