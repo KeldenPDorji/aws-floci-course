@@ -38,3 +38,4 @@ Thumbs.db
 *.swp
 .vscode/
 .idea/
+labs/lab-11-cicd/app/dist/

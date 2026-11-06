@@ -42,6 +42,7 @@ source configs/course.env
 | 08  | EKS scaling and exposure | [x] complete | [lab-08-report.md](labs/lab-08-eks-scaling/lab-08-report.md) |
 | 09  | Security review (IAM + security groups) | [x] complete | [lab-09-report.md](labs/lab-09-security/lab-09-report.md) |
 | 10  | Edge functions with Lambda (Lambda@Edge + S3 trigger) | [x] complete | [lab-10-report.md](labs/lab-10-lambda-edge/lab-10-report.md) |
+| 11  | CI/CD pipeline (CodePipeline + CodeBuild) | [x] complete | [lab-11-report.md](labs/lab-11-cicd/lab-11-report.md) |
 
 ### Lab 01 verification
 
@@ -304,6 +305,32 @@ source configs/course.env
 source configs/lab-01.env
 source configs/lab-10.env
 ./scripts/utilities/verify-lab-10.sh
+```
+
+### Lab 11 verification
+
+![verify-lab-11.sh showing PASS=46 FAIL=0, lab-11.env with 26 populated exports, Git hygiene, and verify-lab-10.sh still 51/0](screenshots/lab11-06-verify-env-and-hygiene.png)
+
+Lab 11 is on support path A by the probe, but behaves differently in practice.
+- **CodeBuild runs builds for real.** It needs a local stand-in image, because Floci pulls
+  `aws/codebuild/standard:7.0` from Docker Hub, where it does not exist.
+- **The pipeline does not run its build.** It executes both stages and records the S3
+  version it fetched, but its build receives an empty source directory and no artifacts are
+  stored.
+- **What stands in.** A standalone twin project builds the same source key, and the
+  read-back ties each release to the version the execution recorded.
+
+`verify-lab-11.sh` checks configuration, so it passes regardless. See
+[lab-11-report.md](labs/lab-11-cicd/lab-11-report.md) Sections 3.4 to 3.7 and 6.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+docker build -t aws/codebuild/standard:7.0 labs/lab-11-cicd/codebuild-standin
+source configs/course.env
+source configs/lab-11.env
+./scripts/utilities/verify-lab-11.sh
 ```
 
 ## Conventions

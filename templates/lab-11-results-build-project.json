@@ -1,0 +1,41 @@
+{
+  "name": "usms-results-build",
+  "description": "Lab 11 Exercise 1 - builds the USMS results service from labs/lab-11-cicd/app-results",
+  "source": {
+    "type": "S3",
+    "location": "usms-pipeline-artifacts/source/usms-results-src.zip"
+  },
+  "artifacts": {
+    "type": "S3",
+    "location": "usms-pipeline-artifacts",
+    "path": "build",
+    "name": "usms-results-build.zip",
+    "packaging": "ZIP",
+    "namespaceType": "NONE"
+  },
+  "environment": {
+    "type": "LINUX_CONTAINER",
+    "image": "aws/codebuild/standard:7.0",
+    "computeType": "BUILD_GENERAL1_SMALL",
+    "privilegedMode": false,
+    "environmentVariables": [
+      { "name": "USMS_PROJECT", "value": "USMS", "type": "PLAINTEXT" },
+      { "name": "USMS_SERVICE", "value": "results", "type": "PLAINTEXT" }
+    ]
+  },
+  "serviceRole": "arn:aws:iam::000000000000:role/usms-codebuild-role",
+  "timeoutInMinutes": 15,
+  "queuedTimeoutInMinutes": 30,
+  "logsConfig": {
+    "cloudWatchLogs": {
+      "status": "ENABLED",
+      "groupName": "/aws/codebuild/usms-enrolment-build",
+      "streamName": "usms-results-build"
+    }
+  },
+  "tags": [
+    { "key": "Project", "value": "USMS" },
+    { "key": "Tier", "value": "pipeline" },
+    { "key": "Lab", "value": "11" }
+  ]
+}
