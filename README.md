@@ -41,6 +41,7 @@ source configs/course.env
 | 07  | EKS   | [x] complete | [lab-07-report.md](labs/lab-07-eks/lab-07-report.md) |
 | 08  | EKS scaling and exposure | [x] complete | [lab-08-report.md](labs/lab-08-eks-scaling/lab-08-report.md) |
 | 09  | Security review (IAM + security groups) | [x] complete | [lab-09-report.md](labs/lab-09-security/lab-09-report.md) |
+| 10  | Edge functions with Lambda (Lambda@Edge + S3 trigger) | [x] complete | [lab-10-report.md](labs/lab-10-lambda-edge/lab-10-report.md) |
 
 ### Lab 01 verification
 
@@ -277,6 +278,32 @@ source configs/lab-05.env
 source configs/lab-06.env
 source configs/lab-09.env
 ./scripts/utilities/verify-lab-09.sh
+```
+
+### Lab 10 verification
+
+![verify-lab-10.sh showing PASS=51 FAIL=0, lab-10.env with 25 populated exports and real CloudFront IDs, the IAM audit at HIGH=0 with the edgelambda trust accepted, and Git hygiene](screenshots/lab10-06-verify-env-and-hygiene.png)
+
+Lab 10 runs on support path A.
+- **What runs:** Lambda executes real code, and S3 notifications are really delivered.
+- **What is only a record:** CloudFront distributions exist as records, but Floci never
+  runs an associated edge function.
+- **What stands in:** `usms-edge-simulate.sh` runs the chain in CloudFront's order.
+
+**`docker-compose.yml` needs two settings for any Lambda function to run:**
+`FLOCI_SERVICES_LAMBDA_DOCKER_HOST_OVERRIDE` and `FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK`.
+Since Lab 05, Floci sits on a second Docker network and advertises an address that
+Lambda containers cannot reach. See
+[lab-10-report.md](labs/lab-10-lambda-edge/lab-10-report.md) Section 6.1.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-10.env
+./scripts/utilities/verify-lab-10.sh
 ```
 
 ## Conventions

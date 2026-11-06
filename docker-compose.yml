@@ -58,6 +58,14 @@ services:
       FLOCI_HOSTNAME: floci
       FLOCI_SERVICES_DOCKER_NETWORK: floci-course_default
 
+      # Lab 10: Lambda containers call Floci's Runtime API back for their next
+      # invocation. Since Lab 05's ECS tasks, Floci also sits on the usms-vpc
+      # Docker network (10.0.0.2) and auto-detects THAT address, which a Lambda
+      # container on the compose network cannot reach ("Failed to get next
+      # invocation"). Pin both ends to the compose network.
+      FLOCI_SERVICES_LAMBDA_DOCKER_HOST_OVERRIDE: floci
+      FLOCI_SERVICES_LAMBDA_DOCKER_NETWORK: floci-course_default
+
       # --- Cap the sidecar port ranges -----------------------------------
       # Floci's defaults are 100 ports each; ~600 published ports makes Docker
       # Desktop very slow to start. These caps keep the commented `ports:`
