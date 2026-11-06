@@ -2,12 +2,13 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "CodePipelineAssumesThisRole",
+      "Sid": "CodePipelineAssumesThisRoleForTheEnrolmentPipelineOnly",
       "Effect": "Allow",
       "Principal": { "Service": "codepipeline.amazonaws.com" },
       "Action": "sts:AssumeRole",
       "Condition": {
-        "StringEquals": { "aws:SourceAccount": "000000000000" }
+        "StringEquals": { "aws:SourceAccount": "000000000000" },
+        "ArnLike": { "aws:SourceArn": "arn:aws:codepipeline:us-east-1:000000000000:usms-enrolment-pipeline" }
       }
     }
   ]

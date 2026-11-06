@@ -4,6 +4,9 @@ env:
   variables:
     SERVICE_NAME: "enrolment"
     ARTIFACT_DIR: "dist"
+    # Lab 12 Step 14: overridden by the project's IMAGE_REPO_URI (Step 13); "nginx" marks a
+    # build that never got a registry.
+    IMAGE_REPO_URI: "nginx"
 
 phases:
 
@@ -12,6 +15,7 @@ phases:
       - echo "--- install ---"
       - python3 --version
       - sed --version 2>/dev/null | head -1 || echo "BSD sed"
+      - docker --version || echo "no docker client in this build image"
 
   pre_build:
     commands:
@@ -36,6 +40,22 @@ phases:
         sys.exit(1 if bad else 0)
         PY
       - echo "configuration validated"
+      - USMS_RELEASE="$(tr -d '[:space:]' < VERSION)"
+      - echo "release is $USMS_RELEASE"
+      # Lab 12 Step 14: log in only if this build can run Docker; the token goes on stdin.
+      # Adapted: the guide guards on `docker info` alone, which is true on any developer
+      # laptop - the local runner then re-pushed r6 (moving the tag) and tried to push
+      # nginx:r6 to Docker Hub. So: only inside CodeBuild, and only to a registry URI.
+      - |
+        if [ -n "${CODEBUILD_BUILD_ID:-}" ] && [ "${IMAGE_REPO_URI#*/}" != "$IMAGE_REPO_URI" ] && docker info >/dev/null 2>&1; then
+          echo "docker daemon reachable - this build will build and push an image"
+          aws ecr get-login-password --region "${AWS_REGION_COURSE:-us-east-1}" \
+            | docker login --username AWS --password-stdin "${IMAGE_REPO_URI%%/*}" \
+            || echo "docker login failed - continuing; the image must already exist"
+        else
+          echo "no docker daemon in this build container - skipping the image build"
+          echo "the image must already exist at ${IMAGE_REPO_URI} with this release tag"
+        fi
 
   build:
     commands:
@@ -43,6 +63,11 @@ phases:
       - USMS_RELEASE="$(tr -d '[:space:]' < VERSION)"
       - BUILT_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
       - echo "release=$USMS_RELEASE builtAt=$BUILT_AT"
+      # Lab 12 Exercise 2: a tag that cannot collide, so the repository can be IMMUTABLE.
+      # CodeBuild sets CODEBUILD_BUILD_NUMBER; the local runner does not, so its fallback is a
+      # UTC timestamp. The release stays readable at the front: r7-12, r7-local-20261106T111700.
+      - IMAGE_TAG="${USMS_RELEASE}-${CODEBUILD_BUILD_NUMBER:-local-$(date -u +%Y%m%dT%H%M%S)}"
+      - echo "image tag=$IMAGE_TAG"
       - rm -rf "$ARTIFACT_DIR"
       - mkdir -p "$ARTIFACT_DIR"
       - cp -R src/. "$ARTIFACT_DIR"/
@@ -55,16 +80,24 @@ phases:
           "release": "$USMS_RELEASE",
           "builtAt": "$BUILT_AT",
           "buildId": "${CODEBUILD_BUILD_ID:-local}",
-          "sourceVersion": "${CODEBUILD_RESOLVED_SOURCE_VERSION:-local}"
+          "sourceVersion": "${CODEBUILD_RESOLVED_SOURCE_VERSION:-local}",
+          "imageUri": "${IMAGE_REPO_URI}:$IMAGE_TAG"
         }
         META
       - cp config/service.json "$ARTIFACT_DIR/service.json"
-      # Exercise 5: the deployment contract Lab 12's ECS deploy action reads. A JSON ARRAY
-      # (Lab 12 fails on an object), container name taken from config/service.json - not typed
-      # a second time - and the image from IMAGE_URI, defaulting to what the service runs today
-      # (task definition usms-enrolment:2). Lab 12 sets IMAGE_URI to the image it pushes.
+      # Lab 12 Step 14: build and push the image, only where this build can run Docker.
+      # It runs after dist/ is assembled, because the Dockerfile COPYs dist/.
       - |
-        export IMAGE_URI="${IMAGE_URI:-public.ecr.aws/nginx/nginx:stable-alpine}"
+        if [ -n "${CODEBUILD_BUILD_ID:-}" ] && [ "${IMAGE_REPO_URI#*/}" != "$IMAGE_REPO_URI" ] && docker info >/dev/null 2>&1; then
+          docker build -t "${IMAGE_REPO_URI}:$IMAGE_TAG" .
+          docker push "${IMAGE_REPO_URI}:$IMAGE_TAG" \
+            || echo "push failed - see Section 10; the deploy stage will use the existing tag"
+        fi
+      # Lab 11 Exercise 5, extended in Lab 12: the deployment contract the ECS deploy action
+      # reads. A JSON ARRAY, container name from config/service.json (never typed twice). The
+      # image is IMAGE_URI if set, otherwise the image this build is for: <repository>:<IMAGE_TAG>.
+      - |
+        export IMAGE_URI="${IMAGE_URI:-${IMAGE_REPO_URI}:$IMAGE_TAG}"
         python3 -c 'import json,os,sys; c=json.load(open("config/service.json"))["container"]; json.dump([{"name": c, "imageUri": os.environ["IMAGE_URI"]}], open(sys.argv[1], "w"))' "$ARTIFACT_DIR/imagedefinitions.json"
         cat "$ARTIFACT_DIR/imagedefinitions.json"; echo
 

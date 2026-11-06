@@ -39,3 +39,8 @@ Thumbs.db
 .vscode/
 .idea/
 labs/lab-11-cicd/app/dist/
+
+# Lab 12: snapshots of LIVE state, regenerated on demand - committing one invites someone
+# to apply a stale copy (lab guide Step 21).
+templates/lab-12-taskdef-base.json
+templates/lab-12-pipeline-current.json

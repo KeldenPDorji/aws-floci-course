@@ -25,6 +25,10 @@ services:
       # allocated" failure on a shared or busy machine.
       # Uncomment the line you need; the ranges are capped in `environment:`
       # below so each stays small.
+      # Lab 12 Step 4 says to publish this range. Do NOT on Floci 2.2.0: its ECR registry is a
+      # separate sidecar container (floci-<namespace>-ecr-registry) that publishes 127.0.0.1:5100
+      # itself, so publishing it here too fails with "Bind for 127.0.0.1:5100 failed: port is
+      # already allocated" and Floci does not start.
       # - "5100-5104:5100-5104"     # ECR registries        (Lab 03+)
       # - "6379-6383:6379-6383"     # ElastiCache proxies   (later)
       # - "7001-7005:7001-7005"     # RDS proxies           (later)

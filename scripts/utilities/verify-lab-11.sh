@@ -91,7 +91,9 @@ check "project image is standard:7.0"             "proj environment.image | grep
 
 echo "== CodePipeline =="
 check "pipeline $USMS_PIPELINE_NAME exists"       "pipe name | grep -q $USMS_PIPELINE_NAME"
-check "pipeline has 2 stages"                     "test \"\$(pipe 'length(stages)')\" = 2"
+# Adapted in Lab 12: Lab 12 Step 16 appends a Deploy stage by design, so "exactly 2" would
+# fail on a correct repository. Lab 11 owns the first two stages; check those.
+check "pipeline stages 1-2 are Source, Build"     "test \"\$(pipe 'join(\`,\`, stages[0:2].name)')\" = Source,Build"
 check "stage 1 provider is S3"                    "pipe 'stages[0].actions[0].actionTypeId.provider' | grep -q '^S3$'"
 check "stage 2 builds $USMS_BUILD_PROJECT"        "pipe 'stages[1].actions[0].configuration.ProjectName' | grep -q $USMS_BUILD_PROJECT"
 

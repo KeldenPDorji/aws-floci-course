@@ -43,6 +43,7 @@ source configs/course.env
 | 09  | Security review (IAM + security groups) | [x] complete | [lab-09-report.md](labs/lab-09-security/lab-09-report.md) |
 | 10  | Edge functions with Lambda (Lambda@Edge + S3 trigger) | [x] complete | [lab-10-report.md](labs/lab-10-lambda-edge/lab-10-report.md) |
 | 11  | CI/CD pipeline (CodePipeline + CodeBuild) | [x] complete | [lab-11-report.md](labs/lab-11-cicd/lab-11-report.md) |
+| 12  | Deploying to ECS from the pipeline (ECR + Deploy stage) | [x] complete | [lab-12-report.md](labs/lab-12-cicd-deploy/lab-12-report.md) |
 
 ### Lab 01 verification
 
@@ -331,6 +332,35 @@ docker build -t aws/codebuild/standard:7.0 labs/lab-11-cicd/codebuild-standin
 source configs/course.env
 source configs/lab-11.env
 ./scripts/utilities/verify-lab-11.sh
+```
+
+### Lab 12 verification
+
+![verify-lab-12.sh showing PASS=45 FAIL=0, lab-12.env with 26 populated exports, the blue/green documents validated, Git hygiene, and verify-lab-11.sh still 46/0](screenshots/lab12-06-verify-env-and-hygiene.png)
+
+Lab 12 is on support path A by the probe, but behaves differently in practice.
+- **What is real:** ECR push and pull are real, and the ECS service's containers really run the
+  enrolment image (release r7).
+- **What fails:** the pipeline's Deploy stage, with `Provider ECS is not available in Floci
+  CodePipeline`.
+- **What stands in:** a labelled stand-in, `usms-ecs-deploy-action.sh`, performs that action's
+  steps from a real CodeBuild artifact.
+
+**Two environment facts:**
+- **Do not publish `5100-5104`.** Floci's ECR registry sidecar already holds that port.
+- **If `docker login` returns 503,** the sidecar needs `docker network connect
+  floci-course_default floci-aws-floci-course-ecr-registry`.
+
+See [lab-12-report.md](labs/lab-12-cicd-deploy/lab-12-report.md) Sections 3.4, 3.5 and 6.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-04.env
+source configs/lab-12.env
+./scripts/utilities/verify-lab-12.sh
 ```
 
 ## Conventions
