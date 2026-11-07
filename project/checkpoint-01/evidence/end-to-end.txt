@@ -1,0 +1,65 @@
+USMS end-to-end demonstration - 2026-11-07T07:26:39Z
+
+--- 1. identity: who am I, and what may this role do ---
+AWS_PROFILE         = floci
+AWS_ENDPOINT_URL    = <unset, using profile>
+configured endpoint = http://localhost:4566
+configured region   = us-east-1
+---
+--------------------------------------------------------------------
+|                         GetCallerIdentity                        |
++--------------+----------------------------------+----------------+
+|    Account   |               Arn                |    UserId      |
++--------------+----------------------------------+----------------+
+|  000000000000|  arn:aws:iam::000000000000:root  |  000000000000  |
++--------------+----------------------------------+----------------+
+[ok] Account 000000000000 — this is Floci, not real AWS.
+USMSLambdaBasic	USMSObservabilityWrite
+
+--- 2. storage: the bucket four policies have named since Lab 01 ---
+{
+    "BucketRegion": "us-east-1"
+}
+head-bucket: exit 0
+
+--- 3. trigger: what the bucket does when an object arrives ---
+usms-transcript-upload	arn:aws:lambda:us-east-1:000000000000:function:usms-transcript-notifier:live
+
+--- 4. compute: the function that runs, and the version behind the alias ---
+4	python3.12	Active
+
+--- 5. the event: one transcript, as telemetry (usms-emit-telemetry.sh) ---
+  log     ok   /usms/central/application
+  metric  ok   USMS/Application
+  trace   SKIPPED (X-Ray unavailable on this build) 1-6aeed2b1-47f8f4c9c5a5a5ec40afa3bc
+
+trace id: 1-6aeed2b1-47f8f4c9c5a5a5ec40afa3bc
+
+--- 5b. the event, for real: upload an object and let the bucket call the notifier ---
+the notifier logged, within a minute of the upload:
+USMS_NOTIFY {"bucket": "usms-student-data", "event": "ObjectCreated:Put", "faculty": "evidence", "key": "transcripts/evidence/checkpoint-01-demo.json", "metric_published": true, "readable": true, "size": 115, "trace_id": "3249ef71-22fb-4db1-b46d-340604fa47d7"}
+
+--- 6. logs: what it said ---
+USMS_EVENT {"event":"transcript.processed","faculty":"science","seconds":0.63,"trace_id":"1-6aeed2b1-47f8f4c9c5a5a5ec40afa3bc"} 0.63
+
+--- 7. metrics: what it counted ---
+CentralErrorCount
+EdgeDenyCount
+NotifyCount
+TranscriptLagSeconds
+TranscriptSecondsFromLogs
+TranscriptsProcessed
+
+--- 8. alarms: what would page somebody ---
+usms-transcript-lag-high	OK	notBreaching
+usms-enrolment-queue-high	OK	notBreaching
+usms-notify-silence	ALARM	breaching
+None
+(no composite above: Floci 2.2.0 has none; the rule is templates/lab-13-composite-alarm.json)
+rule          : ALARM("usms-transcript-lag-high") OR ALARM("usms-notify-silence")
+child         : usms-notify-silence        ALARM
+child         : usms-transcript-lag-high   OK
+composite     : ALARM   (evaluated locally - Floci 2.2.0 has no composite alarms)
+
+--- 9. the dashboard somebody would look at ---
+6 widgets

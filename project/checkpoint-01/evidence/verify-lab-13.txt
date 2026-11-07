@@ -1,0 +1,61 @@
+== Environment ==
+  ✔ Floci container running
+  ✔ Storage mode is NOT memory
+  ✔ AWS CLI reaches Floci
+== Log layer ==
+  ✔ central log group /usms/central/application exists
+  ✔ central log group retention is 30 days
+  ✔ notifier log group has a retention policy
+  ✔ ECS log group has a retention policy
+  ✔ NO USMS log group is left on never-expire
+  ✔ central log group has at least one stream
+== Metric filters ==
+  ✔ usms-notify-count exists
+  ✔ usms-notify-count is attached to the NOTIFIER log group
+  ✔ usms-central-errors is attached to the CENTRAL log group
+== Metrics ==
+  ✔ namespace USMS/Application has metrics
+  ✔ TranscriptsProcessed published WITH dimensions
+  ✔ TranscriptsProcessed ALSO published with none  (the total)
+  ✔ TranscriptLagSeconds exists
+== IAM ==
+  ✔ USMSObservabilityWrite exists
+  ✔ attached to usms-lambda-exec-role
+  ✔ attached to usms-ec2-app-role
+  ✔ PutMetricData is scoped by a cloudwatch:namespace condition
+  ✔ log group ARNs end in :*  (streams, not just the group)
+== The instrumented notifier ==
+  ✔ usms-transcript-notifier exists
+  ✔ alias live points at a numbered version
+  ✔ alias live has MOVED PAST Lab 10 version 1
+  ✔ tracing mode on the alias is Active
+  ✔ instrumented handler source emits USMS_SUMMARY
+== Alarms ==
+  ✔ usms-transcript-lag-high exists
+  ✔ usms-transcript-lag-high uses the Maximum statistic, not Average
+  ✔ usms-transcript-lag-high treats missing data as notBreaching
+  ✔ usms-notify-silence exists
+  ✔ usms-notify-silence treats missing data as BREACHING  (it watches an absence)
+  ✔ composite alarm usms-transcript-pipeline-down exists  (document on Floci 2.2.0)
+  ✔ composite rule names BOTH child alarms
+  ✔ no alarm is left in a state FORCED by Step 20 or 21
+== Dashboard ==
+  ✔ dashboard usms-overview exists
+  ✔ dashboard body is valid JSON
+  ✔ dashboard has 6 widgets
+  ✔ no two widgets overlap
+== X-Ray documents ==
+  ✔ sampling rule document is valid JSON
+  ✔ sampling rule declares every required field
+  ✔ segment documents share one trace id and are well formed
+== Files and Git hygiene ==
+  ✔ configs/lab-13.env exists
+  ✔ configs/lab-13.env has 28 exports
+  ✔ configs/lab-13.env has no empty values
+  ✔ usms-emit-telemetry.sh is executable and valid bash
+  ✔ observability policy document is valid JSON
+  ✔ dashboard template is committed, not only deployed
+  ✔ no secret is tracked
+  ✔ no deployment archive is tracked
+
+PASS=49  FAIL=0

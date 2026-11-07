@@ -44,6 +44,10 @@ source configs/course.env
 | 10  | Edge functions with Lambda (Lambda@Edge + S3 trigger) | [x] complete | [lab-10-report.md](labs/lab-10-lambda-edge/lab-10-report.md) |
 | 11  | CI/CD pipeline (CodePipeline + CodeBuild) | [x] complete | [lab-11-report.md](labs/lab-11-cicd/lab-11-report.md) |
 | 12  | Deploying to ECS from the pipeline (ECR + Deploy stage) | [x] complete | [lab-12-report.md](labs/lab-12-cicd-deploy/lab-12-report.md) |
+| 13  | Centralized logging and monitoring (CloudWatch + X-Ray) | [x] complete | [lab-13-report.md](labs/lab-13-cloudwatch-xray/lab-13-report.md) |
+
+Project Implementation Checkpoint 1: [project/checkpoint-01/](project/checkpoint-01/architecture.md)
+(architecture, gaps, demonstration, generated inventory and evidence).
 
 ### Lab 01 verification
 
@@ -361,6 +365,39 @@ source configs/course.env
 source configs/lab-04.env
 source configs/lab-12.env
 ./scripts/utilities/verify-lab-12.sh
+```
+
+### Lab 13 verification
+
+![verify-lab-13.sh showing PASS=49 FAIL=0, lab-13.env with 28 populated exports including the looked-up notifier versions and capability flags, Git hygiene, and verify-lab-12.sh still 45/0](screenshots/lab13-08-verify-env-and-hygiene.png)
+
+Lab 13 is on a mixed support path.
+- **What is real:** logs and retention, metric filters (evaluated on ingestion), custom metrics,
+  dashboards, and **alarm evaluation**. A real breach put `usms-transcript-lag-high` into `ALARM`
+  and back, and `usms-notify-silence` fires by itself after 15 quiet minutes, which is its job.
+- **What is absent:** X-Ray, composite alarms, alarm history, and Logs Insights beyond
+  `fields | limit`.
+- **What stands in:** a structural validator for the trace documents, and the composite alarm as
+  a committed request document evaluated against the live child states.
+
+The guide's 49 checks have five adaptations, each marked in the script:
+- role ARNs read as names
+- the absent composite read from its document
+- real evaluation
+- `outputs/.gitkeep`
+- a JMESPath bug in the guide
+
+Exercise 2 raised the widget count to 6. See
+[lab-13-report.md](labs/lab-13-cloudwatch-xray/lab-13-report.md) Sections 3.6, 3.8 and 6.
+
+Reproduce with:
+
+```bash
+./scripts/setup/floci-up.sh
+source configs/course.env
+source configs/lab-01.env
+source configs/lab-13.env
+./scripts/utilities/verify-lab-13.sh
 ```
 
 ## Conventions

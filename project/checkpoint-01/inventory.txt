@@ -1,0 +1,119 @@
+USMS project inventory - 2026-11-07T07:27:21Z
+account : 000000000000
+endpoint: http://localhost:4566
+
+== identity (Lab 01) ==
+usms-analytics-partner-role
+usms-pipeline-trigger-role
+usms-ec2-app-role
+usms-ecs-task-role
+usms-eks-node-role
+usms-codepipeline-role
+usms-edge-exec-role
+usms-lambda-exec-role
+usms-eks-cluster-role
+usms-deploy-role
+usms-codebuild-role
+usms-backup-operator-role
+usms-developer-role
+usms-breakglass-role
+usms-ecs-exec-role
+usms-transcripts-reader-role
+USMSBackupOperator
+USMSReportingReadOnly
+USMSAssumeAppRoles
+USMSCodeBuildBase
+USMSObservabilityWrite
+USMSCodePipelineBase
+USMSEKSNodePolicy
+USMSStudentDataReadOnly
+USMSAssumePartnerRole
+USMSPermissionsBoundary
+USMSBreakGlassSuspendScaling
+USMSDeveloperBase
+USMSPipelineTriggerBase
+USMSECSTaskExecution
+USMSStudentDataReadWrite
+USMSAnalyticsPartnerRead
+USMSEdgeBasic
+USMSEKSClusterPolicy
+USMSLambdaBasic
+USMSDeployBase
+
+== network (Lab 02) ==
+vpc-1441470d	10.0.0.0/16
+5
+
+== compute (Labs 03, 04, 05) ==
+i-16073b1702bcb7feb	stopped
+i-5fdb315800873602f	terminated
+i-780a8f3d907d26922	stopped
+i-59f53969f4087958b	terminated
+i-c5c064c4786abc867	terminated
+i-80faf975c25aad581	stopped
+i-25384e4e31341c673	terminated
+i-f66018e669eb1530a	stopped
+i-aeef1ea7d6773edbd	terminated
+arn:aws:ecs:us-east-1:000000000000:cluster/usms-ecs-cluster	arn:aws:ecs:us-east-1:000000000000:cluster/default
+usms-eks-cluster
+
+== storage and functions (Lab 10) ==
+usms-student-data	usms-pipeline-artifacts
+usms-edge-origin-response	nodejs20.x	PassThrough
+usms-edge-viewer-request	nodejs20.x	PassThrough
+usms-transcript-notifier	python3.12	Active
+
+== pipeline (Labs 11, 12) ==
+usms-enrolment-pipeline
+usms-enrolment-build-standalone	usms-enrolment-build	usms-results-build
+usms-enrolment	usms-enrolment6
+
+== observability (Lab 13) ==
+/aws/codebuild/usms-enrolment-build	14
+/aws/codebuild/usms-enrolment-build-standalone	14
+/aws/codebuild/usms-results-build	14
+/aws/ecr/registry	None
+/aws/lambda/usms-edge-origin-response	14
+/aws/lambda/usms-edge-viewer-request	14
+/aws/lambda/usms-transcript-notifier	14
+/ecs/usms-enrolment	30
+/usms/central/application	30
+/usms/ecs/enrolment	30
+CentralErrorCount
+EdgeDenyCount
+NotifyCount
+TranscriptLagSeconds
+TranscriptSecondsFromLogs
+TranscriptsProcessed
+TargetTracking-service/usms-ecs-cluster/usms-enrolment-svc-AlarmHigh-695ab7bc-ac2c-442d-bb03-cf5190e316be	INSUFFICIENT_DATA	missing
+usms-transcript-lag-high	OK	notBreaching
+usms-enrolment-queue-high	OK	notBreaching
+TargetTracking-service/usms-ecs-cluster/usms-enrolment-svc-AlarmLow-8d17baa8-0ac8-4ec1-9899-516506dac5ed	INSUFFICIENT_DATA	missing
+TargetTracking-service/usms-ecs-cluster/usms-enrolment-svc-AlarmLow-3b9053ae-7d92-4d0b-8f68-595388df0340	INSUFFICIENT_DATA	missing
+usms-notify-silence	ALARM	breaching
+TargetTracking-service/usms-ecs-cluster/usms-enrolment-svc-AlarmHigh-aafbbf69-5b92-404a-b542-4a4c38c8f334	INSUFFICIENT_DATA	missing
+None
+usms-overview
+
+== repository ==
+lab documents   : 13
+env files       : 13
+verify scripts  : 13
+cleanup scripts : 13
+commits         : 26
+tracked secrets : 0
+
+== verification ==
+scripts/utilities/verify-lab-01.sh       PASS=34  FAIL=0
+scripts/utilities/verify-lab-02.sh       PASS=33  FAIL=0
+scripts/utilities/verify-lab-03.sh       PASS=31  FAIL=5
+scripts/utilities/verify-lab-04.sh       PASS=39  FAIL=0
+scripts/utilities/verify-lab-05.sh       PASS=49  FAIL=1
+scripts/utilities/verify-lab-06.sh       PASS=39  FAIL=3
+scripts/utilities/verify-lab-07.sh       PASS=30  FAIL=0
+scripts/utilities/verify-lab-08.sh       PASS=33  FAIL=1
+scripts/utilities/verify-lab-09.sh       PASS=49  FAIL=1
+scripts/utilities/verify-lab-10.sh       PASS=51  FAIL=0
+scripts/utilities/verify-lab-11.sh       PASS=46  FAIL=0
+scripts/utilities/verify-lab-12.sh       PASS=45  FAIL=0
+scripts/utilities/verify-lab-13.sh       PASS=49  FAIL=0
